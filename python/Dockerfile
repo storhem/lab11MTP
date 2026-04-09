@@ -17,7 +17,7 @@ COPY --from=builder /root/.local /root/.local
 # Копируем приложение
 COPY restnotes.py .
 
-ENV PATH=/root/.local/bin:$PATH
+ENV PATH="/root/.local/bin:$PATH"
 
 EXPOSE 8000
 

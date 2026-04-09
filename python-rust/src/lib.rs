@@ -19,7 +19,7 @@ fn is_palindrome(text: &str) -> bool {
     let cleaned: String = text
         .chars()
         .filter(|c| c.is_alphanumeric())
-        .map(|c| c.to_lowercase().next().unwrap())
+        .flat_map(|c| c.to_lowercase())
         .collect();
     let reversed: String = cleaned.chars().rev().collect();
     cleaned == reversed

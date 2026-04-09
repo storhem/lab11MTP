@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=builder /root/.local /root/.local
 COPY reader.py .
 
-ENV PATH=/root/.local/bin:$PATH
+ENV PATH="/root/.local/bin:$PATH"
 
 EXPOSE 8001
 

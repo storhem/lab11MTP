@@ -13,10 +13,10 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Устанавливаем maturin
-RUN pip install maturin
+RUN pip install maturin==1.7.4
 
 # Копируем файлы сборки и исходники Rust
-COPY Cargo.toml pyproject.toml ./
+COPY Cargo.toml Cargo.lock pyproject.toml ./
 COPY src/ ./src/
 
 # Собираем wheel с Rust-расширением
@@ -44,8 +44,8 @@ RUN pip install /tmp/*.whl && rm /tmp/*.whl
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем приложение
-COPY app/ ./app/
+# Копируем только исходный код приложения (без тестов)
+COPY app/main.py ./app/
 
 EXPOSE 8002
 
