@@ -29,6 +29,18 @@ def test_word_count_tabs():
 def test_word_count_many_words():
     assert texttools.word_count("one two three four five") == 5
 
+def test_word_count_leading_trailing_spaces():
+    assert texttools.word_count("  hello world  ") == 2
+
+def test_word_count_unicode_words():
+    assert texttools.word_count("привет мир") == 2
+
+def test_word_count_mixed_whitespace():
+    assert texttools.word_count("a \t b \n c") == 3
+
+def test_word_count_single_char_words():
+    assert texttools.word_count("a b c d e") == 5
+
 
 # ── reverse_string ────────────────────────────────────────────────────────────
 
@@ -52,6 +64,17 @@ def test_reverse_with_spaces():
 
 def test_reverse_numbers():
     assert texttools.reverse_string("12345") == "54321"
+
+def test_reverse_special_chars():
+    assert texttools.reverse_string("!@#") == "#@!"
+
+def test_reverse_leading_trailing_spaces():
+    assert texttools.reverse_string("  ab") == "ba  "
+
+def test_reverse_is_involution():
+    """Двойной переворот возвращает исходную строку."""
+    for s in ["hello", "привет", "12345", "a b c"]:
+        assert texttools.reverse_string(texttools.reverse_string(s)) == s
 
 
 # ── is_palindrome ─────────────────────────────────────────────────────────────
@@ -83,6 +106,22 @@ def test_palindrome_numbers():
 def test_palindrome_numbers_false():
     assert texttools.is_palindrome("12345") is False
 
+def test_palindrome_two_same_chars():
+    assert texttools.is_palindrome("aa") is True
+
+def test_palindrome_two_diff_chars():
+    assert texttools.is_palindrome("ab") is False
+
+def test_palindrome_only_punctuation():
+    """Строка только из знаков пунктуации считается палиндромом (пустая после фильтрации)."""
+    assert texttools.is_palindrome("!!!") is True
+
+def test_palindrome_even_length():
+    assert texttools.is_palindrome("abba") is True
+
+def test_palindrome_even_length_false():
+    assert texttools.is_palindrome("abcd") is False
+
 
 # ── fibonacci ─────────────────────────────────────────────────────────────────
 
@@ -109,3 +148,19 @@ def test_fibonacci_sequence_property():
     seq = texttools.fibonacci(10)
     for i in range(2, len(seq)):
         assert seq[i] == seq[i - 1] + seq[i - 2]
+
+def test_fibonacci_three():
+    assert texttools.fibonacci(3) == [0, 1, 1]
+
+def test_fibonacci_first_element_is_zero():
+    assert texttools.fibonacci(5)[0] == 0
+
+def test_fibonacci_second_element_is_one():
+    assert texttools.fibonacci(5)[1] == 1
+
+def test_fibonacci_large_n_length():
+    assert len(texttools.fibonacci(20)) == 20
+
+def test_fibonacci_all_non_negative():
+    for v in texttools.fibonacci(15):
+        assert v >= 0

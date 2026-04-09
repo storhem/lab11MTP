@@ -112,3 +112,77 @@ def test_fibonacci_length():
 def test_fibonacci_negative_returns_422():
     r = client.get("/fibonacci", params={"n": -1})
     assert r.status_code == 422
+
+def test_fibonacci_non_integer_returns_422():
+    r = client.get("/fibonacci", params={"n": "abc"})
+    assert r.status_code == 422
+
+def test_fibonacci_sequence_property():
+    seq = client.get("/fibonacci", params={"n": 10}).json()["sequence"]
+    for i in range(2, len(seq)):
+        assert seq[i] == seq[i - 1] + seq[i - 2]
+
+
+# ── Обязательные параметры → 422 ─────────────────────────────────────────────
+
+def test_word_count_missing_param():
+    assert client.get("/word-count").status_code == 422
+
+def test_reverse_missing_param():
+    assert client.get("/reverse").status_code == 422
+
+def test_palindrome_missing_param():
+    assert client.get("/palindrome").status_code == 422
+
+def test_fibonacci_missing_param():
+    assert client.get("/fibonacci").status_code == 422
+
+
+# ── Content-Type для всех эндпоинтов ─────────────────────────────────────────
+
+def test_all_endpoints_return_json():
+    endpoints = [
+        ("/", {}),
+        ("/word-count", {"text": "test"}),
+        ("/reverse", {"text": "test"}),
+        ("/palindrome", {"text": "test"}),
+        ("/fibonacci", {"n": 5}),
+    ]
+    for path, params in endpoints:
+        r = client.get(path, params=params)
+        assert r.headers["content-type"].startswith("application/json"), \
+            f"{path}: ожидали application/json"
+
+
+# ── Структура ответов ─────────────────────────────────────────────────────────
+
+def test_word_count_response_structure():
+    r = client.get("/word-count", params={"text": "hello"})
+    assert set(r.json().keys()) == {"text", "count"}
+
+def test_reverse_response_structure():
+    r = client.get("/reverse", params={"text": "hello"})
+    assert set(r.json().keys()) == {"text", "reversed"}
+
+def test_palindrome_response_structure():
+    r = client.get("/palindrome", params={"text": "hello"})
+    assert set(r.json().keys()) == {"text", "is_palindrome"}
+
+def test_fibonacci_response_structure():
+    r = client.get("/fibonacci", params={"n": 3})
+    assert set(r.json().keys()) == {"n", "sequence"}
+
+
+# ── Unicode и спецсимволы ─────────────────────────────────────────────────────
+
+def test_word_count_unicode():
+    r = client.get("/word-count", params={"text": "привет мир"})
+    assert r.json()["count"] == 2
+
+def test_reverse_unicode():
+    r = client.get("/reverse", params={"text": "привет"})
+    assert r.json()["reversed"] == "тевирп"
+
+def test_palindrome_punctuation():
+    r = client.get("/palindrome", params={"text": "Was it a car or a cat I saw?"})
+    assert r.json()["is_palindrome"] is True

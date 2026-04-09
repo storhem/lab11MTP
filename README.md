@@ -54,8 +54,8 @@
 │   ├── app/
 │   │   ├── main.py           # FastAPI: /word-count /reverse /palindrome /fibonacci
 │   │   └── tests/
-│   │       ├── test_api.py       # 21 тест FastAPI эндпоинтов
-│   │       └── test_texttools.py # 31 тест Rust-функций напрямую
+│   │       ├── test_api.py       # 35 тестов FastAPI эндпоинтов
+│   │       └── test_texttools.py # 48 тестов Rust-функций напрямую
 │   ├── Cargo.toml
 │   ├── pyproject.toml        # maturin конфигурация
 │   ├── requirements.txt
