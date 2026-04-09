@@ -50,10 +50,16 @@
 │   └── Dockerfile            # CGO_ENABLED=0, ldflags static → scratch
 ├── python-rust/              # Н7 — Python + Rust расширение
 │   ├── src/
+│   │   └── lib.rs            # Rust модуль texttools (PyO3)
 │   ├── app/
+│   │   ├── main.py           # FastAPI: /word-count /reverse /palindrome /fibonacci
+│   │   └── tests/
+│   │       ├── test_api.py       # 21 тест FastAPI эндпоинтов
+│   │       └── test_texttools.py # 31 тест Rust-функций напрямую
 │   ├── Cargo.toml
-│   ├── pyproject.toml
-│   └── Dockerfile
+│   ├── pyproject.toml        # maturin конфигурация
+│   ├── requirements.txt
+│   └── Dockerfile            # builder (Rust→wheel) + python:3.12-slim
 ├── tests/                    # М9 — валидация docker-compose конфигурации
 │   ├── test_compose_resources.py  # 36 тестов лимитов ресурсов
 │   └── requirements.txt
@@ -164,4 +170,24 @@ go test ./... -v
 cd python-rust
 docker build -t py-rust-app .
 docker run -p 8002:8002 py-rust-app
+```
+
+### Эндпоинты python-rust
+
+| Метод | Путь             | Описание                            |
+|-------|------------------|-------------------------------------|
+| GET   | `/`              | Приветствие и список маршрутов      |
+| GET   | `/word-count`    | Подсчёт слов (Rust)                 |
+| GET   | `/reverse`       | Переворот строки (Rust)             |
+| GET   | `/palindrome`    | Проверка палиндрома (Rust)          |
+| GET   | `/fibonacci`     | Числа Фибоначчи (Rust)              |
+
+### Локальный запуск тестов
+
+```bash
+cd python-rust
+maturin build --release
+pip install target/wheels/*.whl
+pip install -r requirements.txt
+pytest app/tests/ -v
 ```
