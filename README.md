@@ -1,58 +1,64 @@
-# Лабораторная работа №11 — Контейнеризация мультиязычных приложений
+# Лабораторная работа №11
+Контейнеризация мультиязычных приложений
 
-Цель: освоить упаковку в контейнеры приложений на Python, Go и Rust, оптимизировать размер образов.
+Студент: Евланичев Максим Юрьевич
+Группа: 221131
+Вариант: 7
 
 ## Задания
 
-| Код | Сложность | Описание |
-|-----|-----------|----------|
-| М1  | Средняя   | Dockerfile для Python-приложения (FastAPI) |
-| М7  | Средняя   | Volume для обмена данными между контейнерами |
-| М9  | Средняя   | Ограничение ресурсов (CPU, память) |
-| Н1  | Повышенная | Go-приложение со статической компиляцией в scratch-образе |
-| Н7  | Повышенная | Multi-stage сборка Python-приложения с Rust-расширением |
+Средняя сложность
+- М1 — Dockerfile для Python-приложения (FastAPI)
+- М7 — Volume для обмена данными между контейнерами
+- М9 — Ограничение ресурсов (CPU, память)
 
-## Структура репозитория
+Повышенная сложность
+- Н1 — Go-приложение со статической компиляцией в scratch-образе
+- Н7 — Multi-stage сборка для Python-приложения с Rust-расширением
+
+## Описание
+
+Проект демонстрирует контейнеризацию приложений на трёх языках с оптимизацией размера образов:
+
+- **Python-сервис (FastAPI)** — REST API для управления заметками, двухстадийная Docker-сборка.
+- **Go-сервис (scratch-образ)** — статически скомпилированный HTTP-сервис в минимальном образе.
+- **Python + Rust расширение** — Python-приложение с вычислительным модулем на Rust (PyO3/maturin), multi-stage сборка.
+
+## Структура проекта
 
 ```
 .
-├── python/             # М1 — FastAPI приложение
-│   ├── restnotes.py
+├── python/                   # М1 — FastAPI приложение
+│   ├── restnotes.py          # CRUD API для заметок
 │   ├── requirements.txt
-│   ├── Dockerfile
+│   ├── Dockerfile            # Двухстадийная сборка (builder + slim)
 │   └── tests/
-│       └── test_notes.py
-├── go/                 # Н1 — Go приложение (scratch-образ)
+│       └── test_notes.py     # 19 unit-тестов
+├── go/                       # Н1 — Go сервис (scratch-образ)
 │   ├── main.go
 │   ├── main_test.go
 │   ├── go.mod
 │   └── Dockerfile
-├── python-rust/        # Н7 — Python + Rust расширение
+├── python-rust/              # Н7 — Python + Rust расширение
 │   ├── src/
+│   ├── app/
 │   ├── Cargo.toml
 │   ├── pyproject.toml
 │   └── Dockerfile
-├── docker-compose.yml  # М7, М9 — оркестрация, volumes, лимиты
+├── docker-compose.yml        # М7, М9 — оркестрация, volumes, лимиты ресурсов
 ├── .gitignore
-├── README.md
-└── PROMPT_LOG.md
+├── PROMPT_LOG.md
+└── README.md
 ```
 
-## М1 — Python (FastAPI)
+## Технологии
 
-REST API для управления заметками.
+- Python 3.12 + FastAPI + Uvicorn
+- Go 1.22 (CGO_ENABLED=0, scratch-образ)
+- Rust + PyO3 + maturin
+- Docker multi-stage build
 
-### Эндпоинты
-
-| Метод | Путь | Описание |
-|-------|------|----------|
-| GET | `/` | Приветствие |
-| GET | `/notes` | Список всех заметок |
-| GET | `/notes/{id}` | Заметка по ID |
-| POST | `/notes?text=...` | Создать заметку |
-| DELETE | `/notes/{id}` | Удалить заметку |
-
-### Запуск
+## М1 — Запуск Python-сервиса
 
 ```bash
 cd python
@@ -60,7 +66,17 @@ docker build -t notes-api .
 docker run -p 8000:8000 notes-api
 ```
 
-API доступен на `http://localhost:8000`, документация — `http://localhost:8000/docs`.
+Сервис запустится на `http://localhost:8000`, документация — `http://localhost:8000/docs`.
+
+### Эндпоинты
+
+| Метод  | Путь             | Описание             |
+|--------|------------------|----------------------|
+| GET    | `/`              | Приветствие          |
+| GET    | `/notes`         | Список всех заметок  |
+| GET    | `/notes/{id}`    | Заметка по ID        |
+| POST   | `/notes?text=…`  | Создать заметку      |
+| DELETE | `/notes/{id}`    | Удалить заметку      |
 
 ### Тесты
 
@@ -70,13 +86,7 @@ pip install -r requirements.txt
 pytest tests/ -v
 ```
 
-## М7 + М9 — Docker Compose
-
-```bash
-docker compose up
-```
-
-## Н1 — Go (scratch-образ)
+## Н1 — Запуск Go-сервиса (scratch)
 
 ```bash
 cd go
@@ -84,10 +94,16 @@ docker build -t go-app .
 docker run -p 8080:8080 go-app
 ```
 
-## Н7 — Python + Rust расширение
+## Н7 — Запуск Python + Rust
 
 ```bash
 cd python-rust
 docker build -t py-rust-app .
 docker run -p 8001:8001 py-rust-app
+```
+
+## М7 + М9 — Docker Compose (volumes + лимиты)
+
+```bash
+docker compose up
 ```
