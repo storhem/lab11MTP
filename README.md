@@ -96,6 +96,22 @@ docker run -p 8000:8000 notes-api
 | POST   | `/notes?text=…`  | Создать заметку      |
 | DELETE | `/notes/{id}`    | Удалить заметку      |
 
+### Примеры запросов notes-api
+
+```bash
+# Создать заметку
+curl -X POST "http://localhost:8000/notes?text=Hello"
+
+# Получить все заметки
+curl http://localhost:8000/notes
+
+# Получить заметку по ID
+curl http://localhost:8000/notes/1
+
+# Удалить заметку
+curl -X DELETE http://localhost:8000/notes/1
+```
+
 ### Тесты notes-api
 
 ```bash
@@ -122,6 +138,19 @@ docker run -e NOTES_FILE=/data/notes.json -p 8001:8001 notes-reader
 | GET   | `/notes`          | Список заметок        |
 | GET   | `/notes/count`    | Количество заметок    |
 | GET   | `/notes/{id}`     | Заметка по ID         |
+
+### Примеры запросов notes-reader
+
+```bash
+# Список заметок
+curl http://localhost:8001/notes
+
+# Количество заметок
+curl http://localhost:8001/notes/count
+
+# Заметка по ID
+curl http://localhost:8001/notes/1
+```
 
 ### Тесты notes-reader
 
@@ -157,6 +186,15 @@ docker run -p 8080:8080 go-app
 | GET   | `/health` | Статус сервиса                      |
 | GET   | `/info`   | Hostname, Go version, OS, arch      |
 
+### Примеры запросов go-service
+
+```bash
+curl http://localhost:8080/
+curl http://localhost:8080/ping
+curl http://localhost:8080/health
+curl http://localhost:8080/info
+```
+
 ### Тесты
 
 ```bash
@@ -181,6 +219,22 @@ docker run -p 8002:8002 py-rust-app
 | GET   | `/reverse`       | Переворот строки (Rust)             |
 | GET   | `/palindrome`    | Проверка палиндрома (Rust)          |
 | GET   | `/fibonacci`     | Числа Фибоначчи (Rust)              |
+
+### Примеры запросов python-rust
+
+```bash
+# Подсчёт слов
+curl "http://localhost:8002/word-count?text=hello+world"
+
+# Переворот строки
+curl "http://localhost:8002/reverse?text=hello"
+
+# Проверка палиндрома
+curl "http://localhost:8002/palindrome?text=racecar"
+
+# Числа Фибоначчи
+curl "http://localhost:8002/fibonacci?n=7"
+```
 
 ### Локальный запуск тестов
 
