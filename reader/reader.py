@@ -5,11 +5,8 @@ from typing import List
 
 app = FastAPI(title="Notes Reader", description="Read-only доступ к заметкам из shared volume")
 
-NOTES_FILE = os.environ.get("NOTES_FILE", "/data/notes.json")
-
-
 def _read_notes() -> List[dict]:
-    path = os.environ.get("NOTES_FILE", NOTES_FILE)
+    path = os.environ.get("NOTES_FILE", "/data/notes.json")
     if not os.path.exists(path):
         return []
     with open(path, "r", encoding="utf-8") as f:

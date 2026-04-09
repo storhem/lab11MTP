@@ -20,7 +20,8 @@
 
 Проект демонстрирует контейнеризацию приложений на трёх языках с оптимизацией размера образов:
 
-- **Python-сервис (FastAPI)** — REST API для управления заметками, двухстадийная Docker-сборка.
+- **Python-сервис (FastAPI)** — REST API для управления заметками, двухстадийная Docker-сборка, персистентность через shared volume.
+- **Reader-сервис (FastAPI)** — read-only API, читает заметки из того же shared volume.
 - **Go-сервис (scratch-образ)** — статически скомпилированный HTTP-сервис в минимальном образе.
 - **Python + Rust расширение** — Python-приложение с вычислительным модулем на Rust (PyO3/maturin), multi-stage сборка.
 
@@ -28,12 +29,18 @@
 
 ```
 .
-├── python/                   # М1 — FastAPI приложение
-│   ├── restnotes.py          # CRUD API для заметок
+├── python/                   # М1 — FastAPI приложение (notes-api)
+│   ├── restnotes.py          # CRUD API для заметок с персистентностью
 │   ├── requirements.txt
 │   ├── Dockerfile            # Двухстадийная сборка (builder + slim)
 │   └── tests/
-│       └── test_notes.py     # 19 unit-тестов
+│       └── test_notes.py     # 24 unit-тестов
+├── reader/                   # М7 — read-only сервис (notes-reader)
+│   ├── reader.py             # GET /notes, /notes/{id}, /notes/count
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── tests/
+│       └── test_reader.py    # 14 unit-тестов
 ├── go/                       # Н1 — Go сервис (scratch-образ)
 │   ├── main.go
 │   ├── main_test.go
@@ -58,7 +65,7 @@
 - Rust + PyO3 + maturin
 - Docker multi-stage build
 
-## М1 — Запуск Python-сервиса
+## М1 — Запуск Python-сервиса (notes-api)
 
 ```bash
 cd python
@@ -68,7 +75,7 @@ docker run -p 8000:8000 notes-api
 
 Сервис запустится на `http://localhost:8000`, документация — `http://localhost:8000/docs`.
 
-### Эндпоинты
+### Эндпоинты notes-api
 
 | Метод  | Путь             | Описание             |
 |--------|------------------|----------------------|
@@ -78,13 +85,49 @@ docker run -p 8000:8000 notes-api
 | POST   | `/notes?text=…`  | Создать заметку      |
 | DELETE | `/notes/{id}`    | Удалить заметку      |
 
-### Тесты
+### Тесты notes-api
 
 ```bash
 cd python
 pip install -r requirements.txt
 pytest tests/ -v
 ```
+
+## М7 — Reader-сервис (notes-reader)
+
+Читает заметки из того же shared volume, что и notes-api. Монтируется read-only.
+
+```bash
+cd reader
+docker build -t notes-reader .
+docker run -e NOTES_FILE=/data/notes.json -p 8001:8001 notes-reader
+```
+
+### Эндпоинты notes-reader
+
+| Метод | Путь              | Описание              |
+|-------|-------------------|-----------------------|
+| GET   | `/`               | Приветствие           |
+| GET   | `/notes`          | Список заметок        |
+| GET   | `/notes/count`    | Количество заметок    |
+| GET   | `/notes/{id}`     | Заметка по ID         |
+
+### Тесты notes-reader
+
+```bash
+cd reader
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+## М7 + М9 — Docker Compose (volumes + лимиты)
+
+```bash
+docker compose up
+```
+
+- `notes-api` — порт 8000, read-write доступ к volume `notes-data`
+- `notes-reader` — порт 8001, read-only доступ к тому же volume
 
 ## Н1 — Запуск Go-сервиса (scratch)
 
@@ -99,11 +142,5 @@ docker run -p 8080:8080 go-app
 ```bash
 cd python-rust
 docker build -t py-rust-app .
-docker run -p 8001:8001 py-rust-app
-```
-
-## М7 + М9 — Docker Compose (volumes + лимиты)
-
-```bash
-docker compose up
+docker run -p 8002:8002 py-rust-app
 ```
