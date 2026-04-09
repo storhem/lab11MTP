@@ -1,0 +1,36 @@
+services:
+  notes-api:
+    build: ./python
+    ports:
+      - "8000:8000"
+    volumes:
+      - notes-data:/data
+    environment:
+      - NOTES_FILE=/data/notes.json
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 10s
+      start-period: 5s
+      retries: 3
+
+  notes-reader:
+    build: ./reader
+    ports:
+      - "8001:8001"
+    volumes:
+      - notes-data:/data:ro
+    environment:
+      - NOTES_FILE=/data/notes.json
+    depends_on:
+      notes-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/')"]
+      interval: 30s
+      timeout: 10s
+      start-period: 5s
+      retries: 3
+
+volumes:
+  notes-data:
