@@ -44,10 +44,10 @@
 │   └── tests/
 │       └── test_reader.py    # 14 unit-тестов
 ├── go/                       # Н1 — Go сервис (scratch-образ)
-│   ├── main.go
-│   ├── main_test.go
+│   ├── main.go               # HTTP-сервис: GET /, /ping, /health, /info
+│   ├── main_test.go          # 44 теста через httptest
 │   ├── go.mod
-│   └── Dockerfile
+│   └── Dockerfile            # CGO_ENABLED=0, ldflags static → scratch
 ├── python-rust/              # Н7 — Python + Rust расширение
 │   ├── src/
 │   ├── app/
@@ -140,6 +140,22 @@ docker compose up
 cd go
 docker build -t go-app .
 docker run -p 8080:8080 go-app
+```
+
+### Эндпоинты go-service
+
+| Метод | Путь      | Описание                            |
+|-------|-----------|-------------------------------------|
+| GET   | `/`       | Приветствие и список маршрутов      |
+| GET   | `/ping`   | Pong с временной меткой             |
+| GET   | `/health` | Статус сервиса                      |
+| GET   | `/info`   | Hostname, Go version, OS, arch      |
+
+### Тесты
+
+```bash
+cd go
+go test ./... -v
 ```
 
 ## Н7 — Запуск Python + Rust
