@@ -54,6 +54,9 @@
 │   ├── Cargo.toml
 │   ├── pyproject.toml
 │   └── Dockerfile
+├── tests/                    # М9 — валидация docker-compose конфигурации
+│   ├── test_compose_resources.py  # 36 тестов лимитов ресурсов
+│   └── requirements.txt
 ├── docker-compose.yml        # М7, М9 — оркестрация, volumes, лимиты ресурсов
 ├── .gitignore
 ├── PROMPT_LOG.md

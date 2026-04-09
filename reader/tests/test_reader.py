@@ -117,7 +117,6 @@ def test_reader_sees_data_written_by_api(tmp_path, monkeypatch):
     # notes-api пишет заметку
     restnotes.notes.clear()
     restnotes.next_id = 1
-    restnotes._save.__func__ if hasattr(restnotes._save, '__func__') else None
     # Записываем напрямую через _save
     restnotes.notes.append({"id": 1, "text": "Из API"})
     restnotes.next_id = 2
