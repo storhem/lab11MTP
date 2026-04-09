@@ -1,0 +1,96 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ========================
+# Go
+# ========================
+*.exe
+*.exe~
+*.dll
+*.test
+*.out
+/vendor/
+go.sum.bak
+
+# ========================
+# Rust
+# ========================
+target/
+Cargo.lock.bak
+**/*.rs.bk
+
+# ========================
+# Docker
+# ========================
+.dockerignore
+
+# ========================
+# Среды и секреты
+# ========================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+secrets/
+
+# ========================
+# IDE и редакторы
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ========================
+# ОС
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ========================
+# Логи и временные файлы
+# ========================
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# ========================
+# Данные и базы
+# ========================
+*.db
+*.sqlite
+*.sqlite3
+data/
