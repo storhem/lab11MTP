@@ -45,7 +45,7 @@
 │       └── test_reader.py    # 14 unit-тестов
 ├── go/                       # Н1 — Go сервис (scratch-образ)
 │   ├── main.go               # HTTP-сервис: GET /, /ping, /health, /info
-│   ├── main_test.go          # 44 теста через httptest
+│   ├── main_test.go          # 42 теста через httptest
 │   ├── go.mod
 │   └── Dockerfile            # CGO_ENABLED=0, ldflags static → scratch
 ├── python-rust/              # Н7 — Python + Rust расширение
